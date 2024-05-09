@@ -5,7 +5,7 @@ exports.bookinstance_list = (req, res, next) => {
 };
 
 exports.bookinstance_detail = (req, res, next) => {
-  res.sned(`TODO: BookInstance detail: ${req.params.id}`);
+  res.send(`TODO: BookInstance detail: ${req.params.id}`);
 };
 
 exports.bookinstance_create_get = (req, res, next) => {

@@ -5,7 +5,7 @@ exports.author_list = (req, res, next) => {
 };
 
 exports.author_detail = (req, res, next) => {
-  res.sned(`TODO: Author detail: ${req.params.id}`);
+  res.send(`TODO: Author detail: ${req.params.id}`);
 };
 
 exports.author_create_get = (req, res, next) => {

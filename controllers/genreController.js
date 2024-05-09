@@ -5,7 +5,7 @@ exports.genre_list = (req, res, next) => {
 };
 
 exports.genre_detail = (req, res, next) => {
-  res.sned(`TODO: Genre detail: ${req.params.id}`);
+  res.send(`TODO: Genre detail: ${req.params.id}`);
 };
 
 exports.genre_create_get = (req, res, next) => {

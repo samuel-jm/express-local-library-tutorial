@@ -1,7 +1,7 @@
 const Book = require("../models/book");
 
 exports.index = (req, res, next) => {
-  res.sned("TODO: Site Home Page");
+  res.send("TODO: Site Home Page");
 };
 
 exports.book_list = (req, res, next) => {
@@ -9,7 +9,7 @@ exports.book_list = (req, res, next) => {
 };
 
 exports.book_detail = (req, res, next) => {
-  res.sned(`TODO: Book detail: ${req.params.id}`);
+  res.send(`TODO: Book detail: ${req.params.id}`);
 };
 
 exports.book_create_get = (req, res, next) => {
