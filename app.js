@@ -1,5 +1,6 @@
 const createError = require("http-errors");
 const express = require("express");
+const handlebars = require("express-handlebars");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
@@ -27,6 +28,14 @@ try {
 }
 
 // view engine setup
+app.engine(
+  "hbs",
+  handlebars.engine({
+    layoutsDir: "./views",
+    extname: "hbs",
+    defaultLayout: "layout",
+  })
+);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
 
