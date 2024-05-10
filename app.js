@@ -5,10 +5,19 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
+const Handlebars = require("handlebars");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const catalogRouter = require("./routes/catalog");
+
+Handlebars.registerHelper("ifEquals", function (a, b, options) {
+  return a == b ? options.fn(this) : options.inverse(this);
+});
+
+Handlebars.registerHelper("ifNotEquals", function (a, b, options) {
+  return a != b ? options.fn(this) : options.inverse(this);
+});
 
 const app = express();
 
