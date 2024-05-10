@@ -1,7 +1,16 @@
 const Genre = require("../models/genre");
 
-exports.genre_list = (req, res, next) => {
-  res.send("TODO: Genre list");
+exports.genre_list = async (req, res, next) => {
+  try {
+    const allGenres = await Genre.find().sort({ name: 1 }).exec();
+
+    res.render("genreList", {
+      title: "Genre List",
+      genre_list: allGenres.map((genre) => genre.toJSON()),
+    });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 exports.genre_detail = (req, res, next) => {
