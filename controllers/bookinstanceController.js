@@ -17,8 +17,25 @@ exports.bookinstance_list = async (req, res, next) => {
   }
 };
 
-exports.bookinstance_detail = (req, res, next) => {
-  res.send(`TODO: BookInstance detail: ${req.params.id}`);
+exports.bookinstance_detail = async (req, res, next) => {
+  try {
+    const bookInstance = await BookInstance.findById(req.params.id)
+      .populate("book")
+      .exec();
+
+    if (bookInstance === null) {
+      const err = new Error("Book copy not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    res.render("bookinstanceDetail", {
+      title: "Book:",
+      bookinstance: bookInstance.toJSON(),
+    });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 exports.bookinstance_create_get = (req, res, next) => {
