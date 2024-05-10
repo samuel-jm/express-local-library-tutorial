@@ -17,7 +17,7 @@ AuthorSchema.virtual("name").get(function () {
 });
 
 AuthorSchema.virtual("url").get(function () {
-  `/catalog/author/${this._id}`;
+  return `/catalog/author/${this._id}`;
 });
 
 AuthorSchema.virtual("date_of_birth_formatted").get(function () {
