@@ -30,8 +30,22 @@ exports.index = async (req, res, next) => {
   });
 };
 
-exports.book_list = (req, res, next) => {
-  res.send("TODO: Book list");
+exports.book_list = async (req, res, next) => {
+  try {
+    const allBooks = await Book.find({}, "title author")
+      .sort({ title: 1 })
+      .populate("author")
+      .exec();
+
+    console.log(allBooks[0].author.name);
+
+    res.render("bookList", {
+      title: "Book List",
+      book_list: allBooks.map((book) => book.toJSON()),
+    });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 exports.book_detail = (req, res, next) => {
