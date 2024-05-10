@@ -17,12 +17,12 @@ mongoose.set("strictQuery", false);
 
 const mongoDB = "mongodb://127.0.0.1/local-library";
 
-async function main() {
+async function connectToDB() {
   await mongoose.connect(mongoDB);
 }
 
 try {
-  main();
+  connectToDB();
 } catch (err) {
   console.error(err);
 }
