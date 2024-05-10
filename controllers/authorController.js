@@ -1,4 +1,5 @@
 const Author = require("../models/author");
+const Book = require("../models/book");
 
 exports.author_list = async (req, res, next) => {
   try {
@@ -15,8 +16,27 @@ exports.author_list = async (req, res, next) => {
   }
 };
 
-exports.author_detail = (req, res, next) => {
-  res.send(`TODO: Author detail: ${req.params.id}`);
+exports.author_detail = async (req, res, next) => {
+  try {
+    const [author, allBooksByAuthor] = await Promise.all([
+      Author.findById(req.params.id).exec(),
+      Book.find({ author: req.params.id }, "title summary").exec(),
+    ]);
+
+    if (author === null) {
+      const err = new Error("Author not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    res.render("authorDetail", {
+      title: "Author Detail",
+      author: author.toJSON(),
+      author_books: allBooksByAuthor.map((book) => book.toJSON()),
+    });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 exports.author_create_get = (req, res, next) => {
