@@ -37,8 +37,6 @@ exports.book_list = async (req, res, next) => {
       .populate("author")
       .exec();
 
-    console.log(allBooks[0].author.name);
-
     res.render("bookList", {
       title: "Book List",
       book_list: allBooks.map((book) => book.toJSON()),
@@ -48,8 +46,27 @@ exports.book_list = async (req, res, next) => {
   }
 };
 
-exports.book_detail = (req, res, next) => {
-  res.send(`TODO: Book detail: ${req.params.id}`);
+exports.book_detail = async (req, res, next) => {
+  try {
+    const [book, bookInstances] = await Promise.all([
+      Book.findById(req.params.id).populate("author").populate("genre").exec(),
+      BookInstance.find({ book: req.params.id }).exec(),
+    ]);
+
+    if (book === null) {
+      const err = new Error("Book not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    res.render("bookDetail", {
+      title: book.toJSON().title,
+      book: book.toJSON(),
+      book_instances: bookInstances.map((instance) => instance.toJSON()),
+    });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 exports.book_create_get = (req, res, next) => {
