@@ -1,23 +1,13 @@
 const createError = require("http-errors");
 const express = require("express");
-const handlebars = require("express-handlebars");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
-const Handlebars = require("handlebars");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const catalogRouter = require("./routes/catalog");
-
-Handlebars.registerHelper("ifEquals", function (a, b, options) {
-  return a == b ? options.fn(this) : options.inverse(this);
-});
-
-Handlebars.registerHelper("ifNotEquals", function (a, b, options) {
-  return a != b ? options.fn(this) : options.inverse(this);
-});
 
 const app = express();
 
@@ -37,16 +27,8 @@ try {
 }
 
 // view engine setup
-app.engine(
-  "hbs",
-  handlebars.engine({
-    layoutsDir: "./views",
-    extname: "hbs",
-    defaultLayout: "layout",
-  })
-);
 app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "hbs");
+app.set("view engine", "ejs");
 
 app.use(logger("dev"));
 app.use(express.json());
