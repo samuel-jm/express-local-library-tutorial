@@ -28,8 +28,6 @@ exports.genre_detail = async (req, res, next) => {
       return next(err);
     }
 
-    console.log(genre);
-
     res.render("genreDetail", {
       title: "Genre Detail",
       genre: genre.toJSON(),
@@ -79,12 +77,40 @@ exports.genre_create_post = [
   },
 ];
 
-exports.genre_delete_get = (req, res, next) => {
-  res.send("TODO: Genre delete GET");
+exports.genre_delete_get = async (req, res, next) => {
+  const [genre, books] = await Promise.all([
+    Genre.findById(req.params.id).exec(),
+    Book.find({genre: req.params.id}, "title summary").exec()
+  ])
+
+  if(genre === null) {
+    res.redirect("/catalog/genres");
+  }
+
+  res.render("genreDelete", {
+    title: "Delete Genre",
+    genre,
+    books
+  })  
 };
 
-exports.genre_delete_post = (req, res, next) => {
-  res.send("TODO: Genre delete POST");
+exports.genre_delete_post = async (req, res, next) => {
+  const [genre, books] = await Promise.all([
+    Genre.findById(req.params.id).exec(),
+    Book.find({genre: req.params.id}, "title summary").exec()
+  ])
+  
+  if(books.length > 0) {
+    res.render("genreDelete", {
+      title: "Delete Genre",
+      genre,
+      books
+    })  
+  } else {
+    await Genre.findByIdAndDelete(req.body.genreid);
+    res.redirect("/catalog/genres");
+  }
+
 };
 
 exports.genre_update_get = (req, res, next) => {
