@@ -81,12 +81,22 @@ exports.bookinstance_create_post = [
   }
 ]
 
-exports.bookinstance_delete_get = (req, res, next) => {
-  res.send("TODO: BookInstance delete GET");
+exports.bookinstance_delete_get = async (req, res, next) => {
+  const bookinstance = await BookInstance.findById(req.params.id).exec();
+
+  if(bookinstance === null) {
+    res.redirect("/catalog/bookinstances")
+  }
+
+  res.render("bookinstanceDelete", {
+    title: "Delete Book Instance",
+    bookinstance
+  })
 };
 
-exports.bookinstance_delete_post = (req, res, next) => {
-  res.send("TODO: BookInstance delete POST");
+exports.bookinstance_delete_post = async (req, res, next) => {
+  await BookInstance.findByIdAndDelete(req.body.bookinstanceid)
+  res.redirect("/catalog/bookinstances");
 };
 
 exports.bookinstance_update_get = (req, res, next) => {
