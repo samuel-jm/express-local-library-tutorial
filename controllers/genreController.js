@@ -113,10 +113,46 @@ exports.genre_delete_post = async (req, res, next) => {
 
 };
 
-exports.genre_update_get = (req, res, next) => {
-  res.send("TODO: Genre update GET");
+exports.genre_update_get = async (req, res, next) => {
+  const genre = await Genre.findById(req.params.id)
+
+  res.render("genreForm", {
+    title: "Update Genre",
+    genre
+  })
 };
 
-exports.genre_update_post = (req, res, next) => {
-  res.send("TODO: Genre update POST");
-};
+exports.genre_update_post = [
+  body("name", "Genre must contain at least 3 characters")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+
+  async (req, res, next) => {
+    try {
+      const errors = validationResult(req);
+
+      const genre = new Genre({ name: req.body.name, _id: req.params.id });
+
+      if (!errors.isEmpty()) {
+        res.render("genreForm", {
+          title: "Create Genre",
+          genre,
+          errors: errors.array(),
+        });
+      } else {
+        const genreExists = await Genre.findOne({ name: req.body.name })
+          .collation({ locale: "en", strength: 2 })
+          .exec();
+        if (genreExists) {
+          res.redirect(genreExists.url);
+        } else {
+          await Genre.findByIdAndUpdate(req.params.id, genre)
+          res.redirect(genre.url);
+        }
+      }
+    } catch (err) {
+      return next(err);
+    }
+  },
+];

@@ -170,7 +170,7 @@ exports.author_update_post = [
 
     if (!errors.isEmpty()) {
       res.render("authorForm", {
-        title: "Create Author",
+        title: "Update Author",
         author: author,
         errors: errors.array(),
       });
