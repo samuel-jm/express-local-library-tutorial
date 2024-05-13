@@ -40,7 +40,7 @@ const limiter = RateLimit({
 })
 
 app.use(compression());
-// app.use(limiter);
+app.use(limiter);
 app.use(helmet())
 app.use(logger("dev"));
 app.use(express.json());
