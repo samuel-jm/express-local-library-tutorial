@@ -19,8 +19,6 @@ exports.index = async (req, res, next) => {
     Genre.countDocuments().exec(),
   ]).catch((err) => next(err));
 
-  console.log(typeof numBooks);
-
   res.render("index", {
     title: "Local Library Home",
     book_count: numBooks,

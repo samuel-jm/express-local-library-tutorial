@@ -6,10 +6,6 @@ exports.bookinstance_list = async (req, res, next) => {
   try {
     const allBookInstances = await BookInstance.find().populate("book").exec();
 
-    allBookInstances.forEach((instance) => {
-      console.log(instance.book.title);
-    });
-
     res.render("bookinstanceList", {
       title: "Book Instance List",
       bookinstance_list: allBookInstances.map((instance) => instance.toJSON()),
