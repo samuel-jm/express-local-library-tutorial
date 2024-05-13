@@ -37,6 +37,7 @@ app.set("view engine", "ejs");
 const limiter = RateLimit({
   windowMs: 1 * 60 * 1000,
   max: 20,
+  validate: {xForwardedForHeader: false},
 })
 
 app.use(compression());
