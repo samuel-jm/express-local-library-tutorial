@@ -1,3 +1,6 @@
+const compression = require("compression");
+const helmet = require("helmet");
+const RateLimit = require("express-rate-limit");
 const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
@@ -14,7 +17,8 @@ const app = express();
 // databse setup
 mongoose.set("strictQuery", false);
 
-const mongoDB = "mongodb://127.0.0.1/local-library";
+const dev_db_url = "mongodb://127.0.0.1/local-library"
+const mongoDB = process.env.MONGODB_URI || dev_db_url;
 
 async function connectToDB() {
   await mongoose.connect(mongoDB);
@@ -30,6 +34,14 @@ try {
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 20,
+})
+
+app.use(compression());
+// app.use(limiter);
+app.use(helmet())
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
