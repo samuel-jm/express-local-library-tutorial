@@ -141,12 +141,39 @@ exports.book_create_post = [
   },
 ];
 
-exports.book_delete_get = (req, res, next) => {
-  res.send("TODO: Book delete GET");
+exports.book_delete_get = async (req, res, next) => {
+  const [book, instances] = await Promise.all([
+    Book.findById(req.params.id, "title author").populate("author").exec(),
+    BookInstance.find({book: req.params.id}, "imprint status due_back").sort({imprint: 1}).exec()
+  ])
+
+  if(book === null) {
+    res.redirect("/catalog/books")
+  }
+
+  res.render("bookDelete", {
+    title: "Delete Book",
+    book,
+    instances
+  })
 };
 
-exports.book_delete_post = (req, res, next) => {
-  res.send("TODO: Book delete POST");
+exports.book_delete_post = async (req, res, next) => {
+  const [book, instances] = await Promise.all([
+    Book.findById(req.params.id, "title author").populate("author").exec(),
+    BookInstance.find({book: req.params.id}, "imprint status due_back").sort({imprint: 1}).exec()
+  ])
+
+  if(instances.length > 0) {
+    res.render("bookDelete", {
+      title: "Delete Book",
+      book,
+      instances
+    })
+  } else {
+    await Book.findByIdAndDelete(book._id);
+    res.redirect("/catalog/books")
+  }
 };
 
 exports.book_update_get = async (req, res, next) => {
