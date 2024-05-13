@@ -92,12 +92,39 @@ exports.author_create_post = [
   },
 ];
 
-exports.author_delete_get = (req, res, next) => {
-  res.send("TODO: Author delete GET");
+exports.author_delete_get = async (req, res, next) => {
+  const [author, authorBooks] = await Promise.all([
+    Author.findById(req.params.id).exec(),
+    Book.find({author: req.params.id}, "title summary").exec()
+  ])
+
+  if(author === null) {
+    res.redirect("/catalog/authors");
+  }
+
+  res.render("authorDelete", {
+    title: "Delete Author",
+    author: author,
+    author_books: authorBooks
+  })
 };
 
-exports.author_delete_post = (req, res, next) => {
-  res.send("TODO: Author delete POST");
+exports.author_delete_post = async (req, res, next) => {
+  const [author, authorBooks] = await Promise.all([
+    Author.findById(req.params.id).exec(),
+    Book.find({author: req.params.id}, "title summary").exec()
+  ])
+
+  if(authorBooks.length > 0) {
+    res.render("authorDelete", {
+      title: "Delete Author",
+      author: author,
+      author_books: authorBooks
+    })
+  } else {
+    await Author.findByIdAndDelete(req.body.authorid);
+    res.redirect("/catalog/authors")
+  }
 };
 
 exports.author_update_get = (req, res, next) => {
