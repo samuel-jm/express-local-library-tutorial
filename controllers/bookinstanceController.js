@@ -95,10 +95,49 @@ exports.bookinstance_delete_post = async (req, res, next) => {
   res.redirect("/catalog/bookinstances");
 };
 
-exports.bookinstance_update_get = (req, res, next) => {
-  res.send("TODO: BookInstance update GET");
+exports.bookinstance_update_get = async (req, res, next) => {
+  const [books, bookinstance] = await Promise.all([
+    Book.find({}, "title").sort({title: 1}).exec(),
+    BookInstance.findById(req.params.id).populate("book")
+  ]);
+
+  res.render("bookinstanceForm", {
+    title: "Update BookInstance",
+    book_list: books,
+    bookinstance,
+    selected_book: bookinstance,
+  })
 };
 
-exports.bookinstance_update_post = (req, res, next) => {
-  res.send("TODO: BookInstance update POST");
-};
+exports.bookinstance_update_post = [
+  body("book", "Book must be specified").trim().isLength({min: 1}).escape(),
+  body("imprint", "Imprint must be specified").trim().isLength({min: 1}).escape(),
+  body("status").escape(),
+  body("due_back", "Invalid date").optional({values: "falsy"}).isISO8601().toDate(),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const bookInstance = new BookInstance({
+      book: req.body.book,
+      imprint: req.body.imprint,
+      status: req.body.status,
+      due_back: req.body.due_back,
+      _id: req.params.id
+    });
+
+    if(!errors.isEmpty()) {
+      const books = await Book.find({}, "title").sort({title: 1}).exec();
+
+      res.render("bookinstanceForm", {
+        title: "Update BookInstance",
+        book_list: books,
+        selected_book: bookInstance.book._id,
+        errors: errors.array(),
+        bookinstance: bookInstance
+      })
+    } else {
+      await BookInstance.findByIdAndUpdate(req.params.id, bookInstance);
+      res.redirect(bookInstance.url);
+    }
+  }
+]

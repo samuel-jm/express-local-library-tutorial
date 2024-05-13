@@ -128,7 +128,7 @@ exports.author_delete_post = async (req, res, next) => {
 exports.author_update_get = async (req, res, next) => {
   const author = await Author.findById(req.params.id).exec();
 
-  res.render("authorForm", { title: "Create Author", author });
+  res.render("authorForm", { title: "Update Author", author });
 };
 
 exports.author_update_post = [
