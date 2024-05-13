@@ -1,4 +1,6 @@
 const BookInstance = require("../models/bookinstance");
+const Book = require("../models/book")
+const { body, validationResult } = require("express-validator")
 
 exports.bookinstance_list = async (req, res, next) => {
   try {
@@ -38,13 +40,46 @@ exports.bookinstance_detail = async (req, res, next) => {
   }
 };
 
-exports.bookinstance_create_get = (req, res, next) => {
-  res.send("TODO: BookInstance create GET");
+exports.bookinstance_create_get = async (req, res, next) => {
+  const books = await Book.find({}, "title").sort({title: 1}).exec();
+
+  res.render("bookinstanceForm", {
+    title: "Create BookInstance",
+    book_list: books,
+  })
 };
 
-exports.bookinstance_create_post = (req, res, next) => {
-  res.send("TODO: BookInstance create POST");
-};
+exports.bookinstance_create_post = [
+  body("book", "Book must be specified").trim().isLength({min: 1}).escape(),
+  body("imprint", "Imprint must be specified").trim().isLength({min: 1}).escape(),
+  body("status").escape(),
+  body("due_back", "Invalid date").optional({values: "falsy"}).isISO8601().toDate(),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const bookInstance = new BookInstance({
+      book: req.body.book,
+      imprint: req.body.imprint,
+      status: req.body.status,
+      due_back: req.body.due_back
+    });
+
+    if(!errors.isEmpty()) {
+      const books = await Book.find({}, "title").sort({title: 1}).exec();
+
+      res.render("bookinstanceForm", {
+        title: "Create BookInstance",
+        book_list: books,
+        selected_book: bookInstance.book._id,
+        errors: errors.array(),
+        bookinstance: bookInstance
+      })
+    } else {
+      await bookInstance.save();
+      res.redirect(bookInstance.url);
+    }
+  }
+]
 
 exports.bookinstance_delete_get = (req, res, next) => {
   res.send("TODO: BookInstance delete GET");
